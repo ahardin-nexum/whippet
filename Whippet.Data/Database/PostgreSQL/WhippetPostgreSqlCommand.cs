@@ -486,7 +486,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>This only affects commands explicitly prepared with <see cref="Prepare"/>, not automatically prepared statements.</remarks>
-        public Task UnprepareAsync(CancellationToken cancellationToken = default)
+        public async Task UnprepareAsync(CancellationToken cancellationToken = default)
         {
             return InternalCommand.UnprepareAsync(cancellationToken);
         }

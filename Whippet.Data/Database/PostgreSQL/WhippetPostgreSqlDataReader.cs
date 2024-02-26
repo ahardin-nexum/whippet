@@ -600,7 +600,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="IndexOutOfRangeException" />
         /// <exception cref="SqlNullValueException" />
         /// <exception cref="InvalidCastException" />
-        public Task<T> GetFieldValueAsync<T>(string column, CancellationToken cancellationToken)
+        public async Task<T> GetFieldValueAsync<T>(string column, CancellationToken cancellationToken)
         {
             return InternalReader.GetFieldValueAsync<T>(column, cancellationToken);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
@@ -491,6 +492,69 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         public async Task<WhippetPostgreSqlBinaryImporter> BeginBinaryImportAsync(string copyFromCommand, CancellationToken cancellationToken = default)
         {
             return await InternalConnection.BeginBinaryImportAsync(copyFromCommand, cancellationToken);
+        }
+
+        /// <summary>
+        /// Begins a binary <b>COPY TO STDOUT</b> operation, a high-performance data export mechanism from a PostgreSQL table. 
+        /// </summary>
+        /// <param name="copyToCommand">A <b>COPY TO STDOUT</b> SQL command.</param>
+        /// <returns><see cref="WhippetPostgreSqlBinaryExporter"/> object which can be used to read rows and columns.</returns>
+        public WhippetPostgreSqlBinaryExporter BeginBinaryExport(string copyToCommand)
+        {
+            return InternalConnection.BeginBinaryExport(copyToCommand);
+        }
+
+        /// <summary>
+        /// Asynchronously begins a binary <b>COPY TO STDOUT</b> operation, a high-performance data export mechanism from a PostgreSQL table. 
+        /// </summary>
+        /// <param name="copyToCommand">A <b>COPY TO STDOUT</b> SQL command.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see cref="Task{TResult}"/> object.</returns>
+        public async Task<WhippetPostgreSqlBinaryExporter> BeginBinaryExportAsync(string copyToCommand, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.BeginBinaryExportAsync(copyToCommand, cancellationToken);
+        }
+
+        /// <summary>
+        /// Begins a textual <b>COPY FROM STDIN</b> operation, a data import mechanism to a PostgreSQL table.
+        /// </summary>
+        /// <param name="copyFromCommand">A <b>COPY FROM STDIN</b> SQL command.</param>
+        /// <returns><see cref="TextWriter"/> object that can be used to send textual data.</returns>
+        public TextWriter BeginTextImport(string copyFromCommand)
+        {
+            return InternalConnection.BeginTextImport(copyFromCommand);
+        }
+
+        /// <summary>
+        /// Asynchronously begins a textual <b>COPY FROM STDIN</b> operation, a data import mechanism to a PostgreSQL table.
+        /// </summary>
+        /// <param name="copyFromCommand">A <b>COPY FROM STDIN</b> SQL command.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see cref="Task{TResult}"/> object.</returns>
+        public async Task<TextWriter> BeginTextImportAsync(string copyFromCommand, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.BeginTextImportAsync(copyFromCommand, cancellationToken);
+        }
+
+        /// <summary>
+        /// Begins a textual <b>COPY TO STDOUT</b> operation, a data import mechanism to a PostgreSQL table.
+        /// </summary>
+        /// <param name="copyToCommand">A <b>COPY TO STDOUT</b> SQL command.</param>
+        /// <returns><see cref="TextReader"/> object that can be used to read textual data.</returns>
+        public TextReader BeginTextExport(string copyToCommand)
+        {
+            return InternalConnection.BeginTextExport(copyToCommand);
+        }
+
+        /// <summary>
+        /// Asynchronously begins a textual <b>COPY TO STDOUT</b> operation, a data import mechanism to a PostgreSQL table.
+        /// </summary>
+        /// <param name="copyToCommand">A <b>COPY TO STDOUT</b> SQL command.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see cref="Task{TResult}"/> object.</returns>
+        public async Task<TextReader> BeginTextExportAsync(string copyToCommand, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.BeginTextExportAsync(copyToCommand, cancellationToken);
         }
         
         
