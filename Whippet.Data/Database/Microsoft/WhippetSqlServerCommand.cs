@@ -816,7 +816,7 @@ namespace Athi.Whippet.Data.Database.Microsoft
         /// <exception cref="ObjectDisposedException" />
         public async Task<XmlReader> ExecuteXmlReaderAsync()
         {
-            return InternalCommand.ExecuteXmlReaderAsync();
+            return await InternalCommand.ExecuteXmlReaderAsync();
         }
 
         /// <summary>
@@ -831,7 +831,7 @@ namespace Athi.Whippet.Data.Database.Microsoft
         /// <exception cref="ObjectDisposedException" />
         public async Task<XmlReader> ExecuteXmlReaderAsync(CancellationToken cancellationToken)
         {
-            return InternalCommand.ExecuteXmlReaderAsync(cancellationToken);
+            return await InternalCommand.ExecuteXmlReaderAsync(cancellationToken);
         }
 
         /// <summary>

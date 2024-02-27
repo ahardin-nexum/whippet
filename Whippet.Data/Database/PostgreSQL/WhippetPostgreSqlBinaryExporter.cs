@@ -144,7 +144,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// </summary>
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task SkipAsync(CancellationToken cancellationToken = default)
+        public Task SkipAsync(CancellationToken cancellationToken = default)
         {
             return InternalObject.SkipAsync(cancellationToken);
         }
@@ -161,7 +161,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// Asynchronously cancels an ongoing export.
         /// </summary>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task CancelAsync()
+        public Task CancelAsync()
         {
             return InternalObject.CancelAsync();
         }

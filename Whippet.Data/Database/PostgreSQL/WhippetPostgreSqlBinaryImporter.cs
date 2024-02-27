@@ -66,7 +66,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// </summary>
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task StartRowAsync(CancellationToken cancellationToken = default)
+        public Task StartRowAsync(CancellationToken cancellationToken = default)
         {
             return InternalImporter.StartRowAsync(cancellationToken);
         }
@@ -88,7 +88,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <typeparam name="T">The type of the column to be written. It must correspond to the actual type or data corruption will occur.</typeparam>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task WriteAsync<T>(T value, CancellationToken cancellationToken = default)
+        public Task WriteAsync<T>(T value, CancellationToken cancellationToken = default)
         {
             return InternalImporter.WriteAsync<T>(value, cancellationToken);
         }
@@ -112,7 +112,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <typeparam name="T">The .NET type of the column to be written.</typeparam>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task WriteAsync<T>(T value, NpgsqlDbType postgresType, CancellationToken cancellationToken = default)
+        public Task WriteAsync<T>(T value, NpgsqlDbType postgresType, CancellationToken cancellationToken = default)
         {
             return InternalImporter.WriteAsync<T>(value, cancellationToken);
         }
@@ -136,7 +136,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <typeparam name="T">The .NET type of the column to be written.</typeparam>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task WriteAsync<T>(T value, string dataTypeName, CancellationToken cancellationToken = default)
+        public Task WriteAsync<T>(T value, string dataTypeName, CancellationToken cancellationToken = default)
         {
             return InternalImporter.WriteAsync<T>(value, dataTypeName, cancellationToken);
         }
@@ -154,7 +154,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// </summary>
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task WriteNullAsync(CancellationToken cancellationToken = default)
+        public Task WriteNullAsync(CancellationToken cancellationToken = default)
         {
             return InternalImporter.WriteNullAsync(cancellationToken);
         }
@@ -174,7 +174,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <param name="values">An array of column values to be written as a single row.</param>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task WriteRowAsync(CancellationToken cancellationToken = default, params object[] values)
+        public Task WriteRowAsync(CancellationToken cancellationToken = default, params object[] values)
         {
             return InternalImporter.WriteRowAsync(cancellationToken, values);
         }

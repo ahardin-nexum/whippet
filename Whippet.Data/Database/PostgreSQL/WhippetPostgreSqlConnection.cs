@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel;
 using System.Net.Security;
 using System.Transactions;
@@ -470,6 +469,17 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public override void ChangeDatabase(string databaseName)
         {
+            ChangeConnectionStringDatabase(databaseName);
+        }
+
+        /// <summary>
+        /// Changes the current database by disconnecting from the actual database and connecting to the specified.
+        /// </summary>
+        /// <param name="databaseName">The name of the database to use in place of the current database.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        protected override void ChangeConnectionStringDatabase(string databaseName)
+        {
             InternalConnection.ChangeDatabase(databaseName);
         }
 
@@ -556,7 +566,205 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         {
             return await InternalConnection.BeginTextExportAsync(copyToCommand, cancellationToken);
         }
+
+        /// <summary>
+        /// Begins a raw binary COPY operation (TO STDOUT or FROM STDIN), a high-performance data export/import mechanism to a PostgreSQL table.
+        /// Note that unlike the other COPY API methods, <see cref="BeginRawBinaryCopy(string)"/> doesn't implement any encoding/decoding
+        /// and is unsuitable for structured import/export operation. It is useful mainly for exporting a table as an opaque
+        /// blob, for the purpose of importing it back later.
+        /// </summary>
+        /// <param name="copyCommand">A <b>COPY TO STDOUT</b> or <b>COPY FROM STDIN</b> SQL command.</param>
+        /// <returns>A <see cref="WhippetPostgreSQLRawCopyStream"/> that can be used to read or write raw binary data.</returns>
+        public WhippetPostgreSQLRawCopyStream BeginRawBinaryCopy(string copyCommand)
+        {
+            return InternalConnection.BeginRawBinaryCopy(copyCommand);
+        }
+
+        /// <summary>
+        /// Begins an asynchronous raw binary COPY operation (TO STDOUT or FROM STDIN), a high-performance data export/import mechanism to a PostgreSQL table.
+        /// Note that unlike the other COPY API methods, <see cref="BeginRawBinaryCopyAsync(string, CancellationToken)"/> doesn't implement any encoding/decoding
+        /// and is unsuitable for structured import/export operation. It is useful mainly for exporting a table as an opaque
+        /// blob, for the purpose of importing it back later.
+        /// </summary>
+        /// <param name="copyCommand">A <b>COPY TO STDOUT</b> or <b>COPY FROM STDIN</b> SQL command.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see cref="Task{TResult}"/> object.</returns>
+        public async Task<WhippetPostgreSQLRawCopyStream> BeginRawBinaryCopyAsync(string copyCommand, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.BeginRawBinaryCopyAsync(copyCommand, cancellationToken);
+        }
+
+        /// <summary>
+        /// Waits until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <param name="timeout">The time-out value, in milliseconds, passed to <see cref="System.Net.Sockets.Socket.ReceiveTimeout"/>. The default value is 0, which indicates an infinite time-out period. Specifying -1 also indicates an infinite time-out period.</param>
+        /// <returns><see langword="true"/> if an asynchronous message was received, <see langword="false"/> if timed out.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public bool Wait(int timeout)
+        {
+            return InternalConnection.Wait(timeout);
+        }
+
+        /// <summary>
+        /// Waits until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <param name="timeout">The timeout value that is passed to <see cref="System.Net.Sockets.Socket.ReceiveTimeout"/>.</param>
+        /// <returns><see langword="true"/> if an asynchronous message was received, <see langword="false"/> if timed out.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public bool Wait(TimeSpan timeout)
+        {
+            return InternalConnection.Wait(timeout);
+        }
+
+        /// <summary>
+        /// Waits until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        public void Wait()
+        {
+            InternalConnection.Wait();
+        }
+
+        /// <summary>
+        /// Waits asynchronously until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <param name="timeout">The timeout value (in milliseconds). Any value less than or equal to zero (0) indicates an indefinite timeout period.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see langword="true"/> if an asynchronous message was received, <see langword="false"/> if timed out.</returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public async Task<bool> WaitAsync(int timeout, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.WaitAsync(timeout, cancellationToken);
+        }
         
+        /// <summary>
+        /// Waits asynchronously until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <param name="timeout"><see cref="TimeSpan"/> struct containing the timeout value.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see langword="true"/> if an asynchronous message was received, <see langword="false"/> if timed out.</returns>
+        public async Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.WaitAsync(timeout, cancellationToken);
+        }
+
+        /// <summary>
+        /// Waits asynchronously until an asynchronous PostgreSQL messages (e.g. a notification) arrives, and exits immediately. The asynchronous message is delivered via the normal events (<see cref="Notification"/>, <see cref="Notice"/>).
+        /// </summary>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns><see cref="Task"/> object.</returns>
+        public Task WaitAsync(CancellationToken cancellationToken = default)
+        {
+            return InternalConnection.WaitAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Returns schema information for the data source of this <see cref="WhippetPostgreSqlConnection"/>.
+        /// </summary>
+        /// <returns>A <see cref="DataTable"/> that contains schema information.</returns>
+        public override DataTable GetSchema()
+        {
+            return InternalConnection.GetSchema();
+        }
+
+        /// <summary>
+        /// Returns the schema collection specified by the collection name filtered by the restrictions.
+        /// </summary>
+        /// <param name="collectionName">The collection name.</param>
+        /// <param name="restrictions">The restriction values to filter the results by.</param>
+        /// <returns>A <see cref="DataTable"/> that contains schema information.</returns>
+        public override DataTable GetSchema(string collectionName, string[] restrictions)
+        {
+            return InternalConnection.GetSchema(collectionName, restrictions);
+        }
+
+        /// <summary>
+        /// Asynchronously returns schema information for the data source of this <see cref="WhippetPostgreSqlConnection"/>.
+        /// </summary>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns>A <see cref="DataTable"/> that contains schema information.</returns>
+        public override Task<DataTable> GetSchemaAsync(CancellationToken cancellationToken = default)
+        {
+            return InternalConnection.GetSchemaAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously returns schema information for the data source of this <see cref="WhippetPostgreSqlConnection"/>.
+        /// </summary>
+        /// <param name="collectionName">The collection name.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        /// <returns>A <see cref="DataTable"/> that contains schema information.</returns>
+        public override Task<DataTable> GetSchemaAsync(string collectionName, CancellationToken cancellationToken = default)
+        {
+            return InternalConnection.GetSchemaAsync(collectionName, cancellationToken);
+        }
         
+        /// <summary>
+        /// Asynchronously returns the schema collection specified by the collection name filtered by the restrictions.
+        /// </summary>
+        /// <param name="collectionName">The collection name.</param>
+        /// <param name="restrictions">The restriction values to filter the results by.</param>
+        /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+        public new async Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+        {
+            return await InternalConnection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
+        }
+
+        /// <summary>
+        /// Clears the connection pool. All idle physical connections in the pool of the given connection are immediately closed, and any busy connections which were opened before <see cref="ClearPool"/> was called
+        /// will be closed when returned to the pool.
+        /// </summary>
+        /// <param name="connection"><see cref="WhippetPostgreSqlConnection"/> to the data source to clear pools for.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void ClearPool(WhippetPostgreSqlConnection connection)
+        {
+            ArgumentNullException.ThrowIfNull(connection);
+            NpgsqlConnection.ClearPool(connection);
+        }
+
+        /// <summary>
+        /// Clear all connection pools. All idle physical connections in all pools are immediately closed, and any busy connections which were opened before <see cref="ClearAllPools"/> was called will be closed when returned to their pool.
+        /// </summary>
+        public static void ClearAllPools()
+        {
+            NpgsqlConnection.ClearAllPools();
+        }
+
+        /// <summary>
+        /// Resets all prepared statements on this connection.
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        public void UnprepareAll()
+        {
+            InternalConnection.UnprepareAll();
+        }
+
+        /// <summary>
+        /// Flushes the type cache for this connection's connection string and reloads the types for this connection only. Type changes will appear for other connections only after they are re-opened from the pool.
+        /// </summary>
+        public void ReloadTypes()
+        {
+            InternalConnection.ReloadTypes();
+        }
+
+        /// <summary>
+        /// Asynchronously flushes the type cache for this connection's connection string and reloads the types for this connection only. Type changes will appear for other connections only after they are re-opened from the pool.
+        /// </summary>
+        public async Task ReloadTypesAsync()
+        {
+            await InternalConnection.ReloadTypesAsync();
+        }
+
+        public static implicit operator NpgsqlConnection(WhippetPostgreSqlConnection connection)
+        {
+            return (connection == null) ? null : connection.InternalConnection;
+        }
+
+        public static implicit operator WhippetPostgreSqlConnection(NpgsqlConnection connection)
+        {
+            return (connection == null) ? null : new WhippetPostgreSqlConnection(connection);
+        }
     }
 }

@@ -185,7 +185,7 @@ namespace Athi.Whippet.Data.Database.Oracle.MySQL
         /// </summary>
         /// <param name="databaseName">Name of the database to switch to.</param>
         /// <returns><see cref="Task"/> object.</returns>
-        public async Task ChangeDatabaseAsync(string databaseName)
+        public Task ChangeDatabaseAsync(string databaseName)
         {
             return InternalConnection.ChangeDatabaseAsync(databaseName);
         }

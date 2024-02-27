@@ -566,7 +566,6 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <returns>The returned object of type <typeparamref name="T"/>.</returns>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="IndexOutOfRangeException" />
-        /// <exception cref="SqlNullValueException" />
         /// <exception cref="InvalidCastException" />
         public T GetFieldValue<T>(string column)
         {
@@ -584,9 +583,9 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="IndexOutOfRangeException" />
         /// <exception cref="SqlNullValueException" />
         /// <exception cref="InvalidCastException" />
-        public override Task<T> GetFieldValueAsync<T>(int ordinal, CancellationToken cancellationToken)
+        public override async Task<T> GetFieldValueAsync<T>(int ordinal, CancellationToken cancellationToken)
         {
-            return InternalReader.GetFieldValueAsync<T>(ordinal, cancellationToken);
+            return await InternalReader.GetFieldValueAsync<T>(ordinal, cancellationToken);
         }
 
         /// <summary>
@@ -602,7 +601,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="InvalidCastException" />
         public async Task<T> GetFieldValueAsync<T>(string column, CancellationToken cancellationToken)
         {
-            return InternalReader.GetFieldValueAsync<T>(column, cancellationToken);
+            return await InternalReader.GetFieldValueAsync<T>(column, cancellationToken);
         }
 
         /// <summary>

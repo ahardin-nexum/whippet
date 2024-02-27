@@ -542,7 +542,7 @@ namespace Athi.Whippet.Data.Database.Oracle.MySQL
         /// <exception cref="InvalidCastException" />
         public async Task<T> GetFieldValueAsync<T>(string column, CancellationToken cancellationToken)
         {
-            return InternalReader.GetFieldValueAsync<T>(column, cancellationToken);
+            return await InternalReader.GetFieldValueAsync<T>(column, cancellationToken);
         }
 
         /// <summary>
