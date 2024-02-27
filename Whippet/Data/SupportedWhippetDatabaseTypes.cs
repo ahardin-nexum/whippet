@@ -12,6 +12,14 @@
         /// <summary>
         /// SQLite lightweight database.
         /// </summary>
-        Sqlite
+        Sqlite,
+        /// <summary>
+        /// Oracle MySQL.
+        /// </summary>
+        MySql,
+        /// <summary>
+        /// PostgreSQL ORDBMS.
+        /// </summary>
+        PostgreSql
     }
 }

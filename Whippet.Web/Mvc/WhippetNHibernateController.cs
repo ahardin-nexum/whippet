@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Athi.Whippet.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -90,7 +91,19 @@ namespace Athi.Whippet.Web.Mvc
         /// <returns><see cref="ISessionFactory"/> object.</returns>
         protected virtual ISessionFactory CreateSessionFactory(IEnumerable<NHibernateBootstrapperMappingDelegate> allMappings = null)
         {
-            return NHibernateWhippetBootstrapper.CreateSessionFactory(GetConnectionString(NHibernateConstantsIndex.PrimaryConnectionStringName), allMappings);
+            return CreateSessionFactory(SupportedWhippetDatabaseTypes.MsSql2012);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ISessionFactory"/> object used for creating NHibernate sessions. The default connection string in the configuration file is used.
+        /// </summary>
+        /// <param name="dbType">Type of database to create session for.</param>
+        /// <param name="allMappings"><see cref="NHibernateBootstrapperMappingDelegate"/> mapping delegates to be appended to the current entity mapping index.</param>
+        /// <returns><see cref="ISessionFactory"/> object.</returns>
+        protected virtual ISessionFactory CreateSessionFactory(SupportedWhippetDatabaseTypes dbType, IEnumerable<NHibernateBootstrapperMappingDelegate> allMappings = null)
+        {
+            return NHibernateWhippetBootstrapper.CreateSessionFactory(GetConnectionString(NHibernateConstantsIndex.PrimaryConnectionStringName), allMappings, null, dbType);
+            
         }
     }
 }

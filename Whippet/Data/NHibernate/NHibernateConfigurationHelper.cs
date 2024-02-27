@@ -72,5 +72,26 @@ namespace Athi.Whippet.Data.NHibernate
         {
             options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() => MySQLConfiguration.Standard.ConnectionString(c => c.Is(connectionString)));
         }
+
+        /// <summary>
+        /// Configures NHibernate for use with a PostgreSQL database engine.
+        /// </summary>
+        /// <param name="options"><see cref="NHibernateConfigurationOptions"/> struct.</param>
+        /// <param name="connectionStringName">Connection string name to retrieve from the configuration file. If <see cref="String.Empty"/> or <see langword="null"/>, will use <see cref="NHibernateConstantsIndex.PrimaryConnectionStringName"/>.</param>
+        public static void ConfigureForPostgreSql(NHibernateConfigurationOptions options, string connectionStringName = null)
+        {
+            string csName = String.IsNullOrWhiteSpace(connectionStringName) ? ConfigurationManager.ConnectionStrings[NHibernateConstantsIndex.PrimaryConnectionStringName].ConnectionString : ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+            options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() => PostgreSQLConfiguration.Standard.ConnectionString(csName));
+        }
+
+        /// <summary>
+        /// Configures NHibernate for use with a PostgreSQL database engine.
+        /// </summary>
+        /// <param name="options"><see cref="NHibernateConfigurationOptions"/> struct.</param>
+        /// <param name="connectionString">Connection string to use.</param>
+        public static void ConfigureForPostgreSqlWithConnectionString(NHibernateConfigurationOptions options, string connectionString)
+        {
+            options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() => PostgreSQLConfiguration.Standard.ConnectionString(c => c.Is(connectionString)));
+        }
     }
 }

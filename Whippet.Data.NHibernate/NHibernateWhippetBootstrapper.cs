@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,20 @@ namespace Athi.Whippet.Data.NHibernate
         /// <exception cref="ArgumentNullException"></exception>
         public static ISessionFactory CreateSessionFactory(string connectionString, IEnumerable<NHibernateBootstrapperMappingDelegate> mappings = null, NHibernatePropertyCollection properties = null)
         {
+            return CreateSessionFactory(connectionString, mappings, properties, SupportedWhippetDatabaseTypes.MsSql2012); 
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ISessionFactory"/> object for creating connections to the database.
+        /// </summary>
+        /// <param name="connectionString">Connection string to assign to the internal session connection strings.</param>
+        /// <param name="mappings">NHibernate Fluent mappings to apply for the session.</param>
+        /// <param name="properties">Additional NHibernate properties to apply to the engine.</param>
+        /// <param name="dbType">Type of database to create a session factory for.</param>
+        /// <returns><see cref="ISessionFactory"/> objects.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static ISessionFactory CreateSessionFactory(string connectionString, IEnumerable<NHibernateBootstrapperMappingDelegate> mappings, NHibernatePropertyCollection properties, SupportedWhippetDatabaseTypes dbType)
+        {
             if (String.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentNullException(nameof(connectionString));
@@ -38,7 +53,23 @@ namespace Athi.Whippet.Data.NHibernate
                     }
                 }
 
-                NHibernateConfigurationHelper.ConfigureForSqlServerWithConnectionString(options, connectionString);
+                switch (dbType)
+                {
+                    case SupportedWhippetDatabaseTypes.MsSql2012:
+                        NHibernateConfigurationHelper.ConfigureForSqlServerWithConnectionString(options, connectionString);
+                        break;
+                    case SupportedWhippetDatabaseTypes.Sqlite:
+                        NHibernateConfigurationHelper.ConfigureForSqlite(options);
+                        break;
+                    case SupportedWhippetDatabaseTypes.MySql:
+                        NHibernateConfigurationHelper.ConfigureForMySqlWithConnectionString(options, connectionString);
+                        break;
+                    case SupportedWhippetDatabaseTypes.PostgreSql:
+                        NHibernateConfigurationHelper.ConfigureForPostgreSqlWithConnectionString(options, connectionString);
+                        break;
+                    default:
+                        throw new InvalidEnumArgumentException(nameof(dbType), Convert.ToInt32(dbType), typeof(SupportedWhippetDatabaseTypes));
+                }
 
                 if (options.Properties == null)
                 {
@@ -60,7 +91,7 @@ namespace Athi.Whippet.Data.NHibernate
                 }
 
                 return DefaultNHibernateSessionFactory.Create(options);
-            }
+            }            
         }
     }
 }
