@@ -82,6 +82,13 @@ namespace Athi.Whippet.Data.Database
         /// </summary>
         /// <param name="databaseName">Name of the database to change to in <see cref="DbConnection.ConnectionString"/>.</param>
         protected abstract void ChangeConnectionStringDatabase(string databaseName);
+
+        /// <summary>
+        /// Changes the username and password on the connection string. This method must be overridden.
+        /// </summary>
+        /// <param name="username">Username to use when connecting to the data source.</param>
+        /// <param name="password">Password to use when connecting to the data source.</param>
+        public abstract void UpdateCredentials(string username, string password);
     }
 
     /// <summary>
@@ -633,6 +640,16 @@ namespace Athi.Whippet.Data.Database
 
                 return command;
             }
+        }
+
+        /// <summary>
+        /// Resets the <see cref="InternalConnection"/> object with the specified instance.
+        /// </summary>
+        /// <param name="connection"><typeparamref name="T"/> object to refresh with.</param>
+        protected void ResetConnection(T connection)
+        {
+            ArgumentNullException.ThrowIfNull(connection);
+            InternalConnection = connection;
         }
     }
 }

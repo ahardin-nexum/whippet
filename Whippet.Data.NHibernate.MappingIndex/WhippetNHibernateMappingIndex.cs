@@ -33,9 +33,6 @@ namespace Athi.Whippet.Data.NHibernate.MappingIndex
                 m.FluentMappings.AddFromAssemblyOf<Athi.Whippet.Jobs.FluentEntityMapper>();
 
                 // Third Party Integrations
-                m.FluentMappings.AddFromAssemblyOf<Athi.Whippet.FreestyleSolutions.MultichannelOrderManager.FluentEntityMapper>();
-                m.FluentMappings.AddFromAssemblyOf<Athi.Whippet.Salesforce.FluentEntityMapper>();
-                m.FluentMappings.AddFromAssemblyOf<Athi.Whippet.Adobe.Magento.FluentEntityMapper>();
 
                 // External fluent mappings that are stored in 3rd-party or external assemblies
 

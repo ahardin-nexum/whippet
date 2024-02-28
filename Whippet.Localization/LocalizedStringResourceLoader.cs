@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Globalization;
 using System.IO;
+using System.Resources.NetStandard;
 using System.Xml;
 using System.Security;
 using Athi.Whippet.ResourceManagement;
@@ -230,6 +231,7 @@ namespace Athi.Whippet.Localization
 		/// <exception cref="FileNotFoundException"></exception>
 		/// <exception cref="NotSupportedException"></exception>
 		/// <exception cref="SecurityException"></exception>
+		[Obsolete("This method is obsolete and will be removed in a future version.")]
 		public static string ReadResourceFile(string resourceFile, bool useDefaultResourceDirectory = true)
 		{
 			if(String.IsNullOrWhiteSpace(resourceFile))
@@ -246,5 +248,39 @@ namespace Athi.Whippet.Localization
 				return File.ReadAllText(resourceFile);
 			}
 		}
+
+        /// <summary>
+        /// Reads a ResX resource file.
+        /// </summary>
+        /// <param name="resourceFile">Path to the resource file.</param>
+        /// <param name="useDefaultResourceDirectory">If <see langword="true"/>, will use the default resource files directory. Otherwise, the full path to the resource file will need to be supplied in <paramref name="resourceFile"/>.</param>
+        /// <returns><see cref="ResXResourceReader"/> object.</returns>
+        public static ResXResourceReader ReadResXFile(string resourceFile, bool useDefaultResourceDirectory = true)
+        {
+            if (String.IsNullOrWhiteSpace(resourceFile))
+            {
+                throw new ArgumentNullException(nameof(resourceFile));
+            }
+            else
+            {
+                ResXResourceReader reader = null;
+
+                if (!resourceFile.EndsWith(".resx", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    resourceFile = resourceFile + ".resx";
+                }
+                
+                if (useDefaultResourceDirectory)
+                {
+                    reader = new ResXResourceReader(Path.Combine(Path.GetDirectoryName(typeof(LocalizedStringResourceLoader).Assembly.Location), DIRECTORY, resourceFile));
+                }
+                else
+                {
+                    reader = new ResXResourceReader(resourceFile);
+                }
+
+                return reader;
+            }
+        }
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using Athi.Whippet.Data.Database.Microsoft;
 using Athi.Whippet.Data.Database.Oracle.MySQL;
+using Athi.Whippet.Data.Database.PostgreSQL;
 using Athi.Whippet.Data.NHibernate;
+using Athi.Whippet.Data.NHibernate.FluentNHibernate;
 
 namespace Athi.Whippet.Installer.Framework.Core
 {
@@ -38,6 +40,12 @@ namespace Athi.Whippet.Installer.Framework.Core
                 else if (dbType.Equals(typeof(WhippetMySqlConnection)))
                 {
                     NHibernateConfigurationHelper.ConfigureForMySqlWithConnectionString(options, connectionString);
+                }
+                else if (dbType.Equals(typeof(WhippetPostgreSqlConnection)))
+                {
+                    WhippetFluentOptions.UseSquareBracketDecoration = false;
+                    WhippetFluentOptions.UseDotSeperator = false;
+                    NHibernateConfigurationHelper.ConfigureForPostgreSqlWithConnectionString(options, connectionString);
                 }
                 else
                 {

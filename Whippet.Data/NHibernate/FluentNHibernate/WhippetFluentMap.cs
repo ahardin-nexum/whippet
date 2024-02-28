@@ -23,6 +23,7 @@ namespace Athi.Whippet.Data.NHibernate.FluentNHibernate
 
         private Dictionary<string, IReadOnlyList<IDbDataParameter>> _rawSqlProcedures;
 
+        
         /// <summary>
         /// Provides a collection of raw SQL statements that provide ad-hoc stored procedures for the entity. This property is read-only.
         /// </summary>
@@ -188,6 +189,28 @@ namespace Athi.Whippet.Data.NHibernate.FluentNHibernate
 
             if (!String.IsNullOrWhiteSpace(table))
             {
+                table = table.Trim();
+                
+                if (!WhippetFluentOptions.UseSquareBracketDecoration)
+                {
+                    if (table.StartsWith('['))
+                    {
+                        table = table.Substring(1);
+                    }
+
+                    if (table.EndsWith(']'))
+                    {
+                        table = table.Substring(0, table.Length - 1);
+                    }
+                    
+                    table = table.Trim();
+                }
+
+                if (!WhippetFluentOptions.UseDotSeperator)
+                {
+                    table = table.Replace('.', '_');
+                }
+
                 Table(table);
             }
 

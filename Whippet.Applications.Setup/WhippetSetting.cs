@@ -88,6 +88,7 @@ namespace Athi.Whippet.Applications.Setup
         /// <summary>
         /// Gets or sets the value stored as a byte array.
         /// </summary>
+        [Obsolete("This property is obsolete and will be removed in a future version.")]
         public virtual byte[] ByteValue
         { get; set; }
 

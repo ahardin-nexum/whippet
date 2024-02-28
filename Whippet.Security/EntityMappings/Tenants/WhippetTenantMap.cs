@@ -25,7 +25,7 @@ namespace Athi.Whippet.Security.EntityMappings.Tenants
             : base(TABLE_NAME)
         {
             
-            Map(t => t.IsRootTenant).Not.Nullable().Default("0");
+            Map(t => t.IsRootTenant).Not.Nullable().Default("false");
             Map(t => t.Name).Not.Nullable().Length(ObjectExtensionMethods.GetDefaultEntityNameMaxLength());
             Map(t => t.URL).Not.Nullable().Length(ObjectExtensionMethods.GetMaximumGoogleUrlLength());
             Map(t => t.Active).Not.Nullable();

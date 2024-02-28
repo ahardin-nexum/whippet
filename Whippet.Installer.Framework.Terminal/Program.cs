@@ -176,7 +176,8 @@ namespace Athi.Whippet.Installer.Framework.Terminal
                     try
                     {
                         connection.ChangeDatabase(databaseName, true);
-
+                        connection.UpdateCredentials(dbInstaller.Credentials.UserName, dbInstaller.Credentials.Password);
+                        
                         configOptions = NHibernateConfigurationOptionsFactory.CreateNHibernateConfiguration(connection.DockerConnectionString, connection.GetType());
                         WhippetNHibernateMappingIndex.ConfigureMappings(configOptions);
 

@@ -207,6 +207,16 @@ namespace Athi.Whippet.Data.Database.Oracle.MySQL
             }
         }
 
+        /// <summary>
+        /// Changes the username and password on the connection string.
+        /// </summary>
+        /// <param name="username">Username to use when connecting to the data source.</param>
+        /// <param name="password">Password to use when connecting to the data source.</param>
+        public override void UpdateCredentials(string username, string password)
+        {
+            throw new NotImplementedException("Need to implement this.");
+        }
+        
         public static implicit operator MySqlConnection(WhippetMySqlConnection connection)
         {
             return (connection == null) ? null : connection.InternalConnection;

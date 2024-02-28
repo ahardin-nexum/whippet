@@ -22,7 +22,7 @@ namespace Athi.Whippet.Applications.Setup.EntityMappings
             Map(s => s.Name).Length(255).Not.Nullable();
             Map(s => s.Description).Length(1024).Nullable();
             Map(s => s.BoolValue).Nullable();
-            Map(s => s.ByteValue).CustomSqlType(SqlServerVarBinaryMaxCustomType).Length(Int32.MaxValue).Nullable();
+            //Map(s => s.ByteValue).CustomSqlType(SqlServerVarBinaryMaxCustomType).Length(Int32.MaxValue).Nullable();
             Map(s => s.DecimalValue).Nullable();
             Map(s => s.DoubleValue).Nullable();
             Map(s => s.GuidValue).Nullable();

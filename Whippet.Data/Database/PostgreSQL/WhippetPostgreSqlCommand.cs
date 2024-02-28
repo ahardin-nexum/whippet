@@ -84,26 +84,6 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         }
 
         /// <summary>
-        /// Gets the list of event handlers that are attached to the current <see cref="Component"/>. This property is read-only.
-        /// </summary>
-        private new EventHandlerList Events
-        {
-            get
-            {
-                IEnumerable<PropertyInfo> props = InternalCommand.GetType().GetNonPublicProperties();
-                PropertyInfo events = props.Where(p => String.Equals(p.Name, nameof(Events), StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                EventHandlerList eventList = null;
-
-                if (events != null)
-                {
-                    eventList = events.GetValue(InternalCommand) as EventHandlerList;
-                }
-
-                return eventList;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the Transact-SQL statement, table name or stored procedure to execute
         /// </summary>
         [DefaultValue("")]
@@ -318,9 +298,9 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WhippetPostgreSqlCommand"/> class with the specified <see cref="PostgreSqlCommand"/> object.
+        /// Initializes a new instance of the <see cref="WhippetPostgreSqlCommand"/> class with the specified <see cref="NpgsqlCommand"/> object.
         /// </summary>
-        /// <param name="command"><see cref="PostgreSqlCommand"/> object to initialize with.</param>
+        /// <param name="command"><see cref="NpgsqlCommand"/> object to initialize with.</param>
         /// <exception cref="ArgumentNullException"></exception>
         public WhippetPostgreSqlCommand(NpgsqlCommand command)
             : base()
@@ -409,7 +389,22 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="ObjectDisposedException" />
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            return ExecuteReader(behavior);
+            return InternalCommand.ExecuteReader(behavior);
+        }
+
+        /// <summary>
+        /// Sends the <see cref="CommandText"/> to the <see cref="Connection"/> and builds a <see cref="WhippetPostgreSqlDataReader"/>.
+        /// </summary>
+        /// <param name="behavior">A <see cref="CommandBehavior"/> value.</param>
+        /// <returns><see cref="WhippetPostgreSqlDataReader"/> object.</returns>
+        /// <exception cref="InvalidCastException" />
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="IOException" />
+        /// <exception cref="ObjectDisposedException" />
+        public new WhippetPostgreSqlDataReader ExecuteReader(CommandBehavior behavior = CommandBehavior.Default)
+        {
+            return InternalCommand.ExecuteReader(behavior);
         }
 
         /// <summary>
@@ -424,7 +419,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="ObjectDisposedException" />
         protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            return await ExecuteReaderAsync(behavior, cancellationToken);
+            return await InternalCommand.ExecuteReaderAsync(behavior, cancellationToken);
         }
 
         /// <summary>
@@ -574,54 +569,6 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         public override string ToString()
         {
             return InternalCommand.ToString();
-        }
-
-        /// <summary>
-        /// Creates a shallow copy of the current <see cref="MarshalByRefObject"/>.
-        /// </summary>
-        /// <param name="cloneIdentity">If <see langword="false"/>, the current <see cref="MarshalByRefObject"/> object's identity will be deleted, which will cause the object to be assigned a new identity when it is marshaled across a remoting boundary. If <see langword="true"/>, the object's current identity is copied to its clone, which will cause remoting client calls to be routed to the remote server object.</param>
-        /// <returns>A shallow copy of the current <see cref="MarshalByRefObject"/> object.</returns>
-        private new MarshalByRefObject MemberwiseClone(bool cloneIdentity)
-        {
-            MethodInfo method = InternalCommand.GetType().GetMethod(nameof(MemberwiseClone), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(bool) }, null);
-            MarshalByRefObject refObj = null;
-
-            if (method != null)
-            {
-                refObj = method.Invoke(InternalCommand, new object[] { cloneIdentity }) as MarshalByRefObject;
-            }
-
-            return refObj;
-        }
-
-        /// <summary>
-        /// Executes the Transact-SQL script stored in <see cref="CommandText"/> against the current <see cref="Connection"/>.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidCastException" />
-        /// <exception cref="IOException" />
-        /// <exception cref="InvalidOperationException" />
-        /// <exception cref="ObjectDisposedException" />
-        public void ExecuteSqlScript()
-        {
-            if (String.IsNullOrWhiteSpace(CommandText))
-            {
-                throw new ArgumentNullException(nameof(CommandText));
-            }
-            else
-            {
-                IEnumerable<string> commandStrings = Regex.Split(CommandText, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-                CommandType = CommandType.Text;
-
-                foreach (string commandString in commandStrings)
-                {
-                    if (!String.IsNullOrWhiteSpace(commandString))
-                    {
-                        CommandText = commandString;
-                        ExecuteNonQuery();
-                    }
-                }
-            }
         }
 
         public static implicit operator WhippetPostgreSqlCommand(NpgsqlCommand command)

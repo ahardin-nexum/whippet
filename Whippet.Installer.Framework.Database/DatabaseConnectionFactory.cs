@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using Athi.Whippet.Data.Database;
 using Athi.Whippet.Data.Database.Microsoft;
 using Athi.Whippet.Data.Database.Oracle.MySQL;
-
+using Athi.Whippet.Data.Database.PostgreSQL;
 namespace Athi.Whippet.Installer.Framework.Database
 {
     /// <summary>
@@ -48,6 +48,7 @@ namespace Athi.Whippet.Installer.Framework.Database
         {
             _AvailableConnectionTypes.Add(typeof(WhippetSqlServerConnection), "Microsoft SQL Server");
             _AvailableConnectionTypes.Add(typeof(WhippetMySqlConnection), "MySQL");
+            _AvailableConnectionTypes.Add(typeof(WhippetPostgreSqlConnection), "PostgreSQL");
         }
 
         /// <summary>
@@ -69,7 +70,8 @@ namespace Athi.Whippet.Installer.Framework.Database
                 
                 WhippetSqlServerConnection sqlConnection = null;
                 WhippetMySqlConnection mySqlConnection = null;
-
+                WhippetPostgreSqlConnection postgreSqlConnection = null;
+                
                 if (typeof(TConnection).Equals(typeof(WhippetSqlServerConnection)))
                 {
                     sqlConnection = new WhippetSqlServerConnection(connectionString);
@@ -79,6 +81,11 @@ namespace Athi.Whippet.Installer.Framework.Database
                 {
                     mySqlConnection = new WhippetMySqlConnection(connectionString);
                     connection = (TConnection)((object)(mySqlConnection));
+                }
+                else if (typeof(TConnection).Equals(typeof(WhippetPostgreSqlConnection)))
+                {
+                    postgreSqlConnection = new WhippetPostgreSqlConnection(connectionString);
+                    connection = (TConnection)((object)(postgreSqlConnection));
                 }
 
                 return connection;

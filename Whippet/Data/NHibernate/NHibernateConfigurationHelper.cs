@@ -91,7 +91,7 @@ namespace Athi.Whippet.Data.NHibernate
         /// <param name="connectionString">Connection string to use.</param>
         public static void ConfigureForPostgreSqlWithConnectionString(NHibernateConfigurationOptions options, string connectionString)
         {
-            options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() => PostgreSQLConfiguration.Standard.ConnectionString(c => c.Is(connectionString)));
+            options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() => PostgreSQLConfiguration.PostgreSQL83.ConnectionString(c => c.Is(connectionString)));
         }
     }
 }

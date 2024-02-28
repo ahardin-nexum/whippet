@@ -28,16 +28,13 @@
     <PackageReference Include="System.Drawing.Common" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Whippet.FreestyleSolutions.MultichannelOrderManager\Whippet.FreestyleSolutions.MultichannelOrderManager.csproj" />
     <ProjectReference Include="..\Whippet\Whippet.csproj" />
     <ProjectReference Include="..\Whippet.Data\Whippet.Data.csproj" />
     <ProjectReference Include="..\Whippet.Data.NHibernate\Whippet.Data.NHibernate.csproj" />
     <ProjectReference Include="..\Whippet.Localization.Addressing\Whippet.Localization.Addressing.csproj" />
     <ProjectReference Include="..\Whippet.Security\Whippet.Security.csproj" />
     <ProjectReference Include="..\Whippet.Applications.Setup\Whippet.Applications.Setup.csproj" />
-    <ProjectReference Include="..\Whippet.Salesforce\Whippet.Salesforce.csproj" />
     <ProjectReference Include="..\Whippet.Networking.Smtp\Whippet.Networking.Smtp.csproj" />
-    <ProjectReference Include="..\Whippet.Adobe.Magento\Whippet.Adobe.Magento.csproj" />
     <ProjectReference Include="..\Whippet.Web.Mvc.Security\Whippet.Web.Mvc.Security.csproj" />
     <ProjectReference Include="..\Whippet.Logging.Serilog\Whippet.Logging.Serilog.csproj" />
     <ProjectReference Include="..\Whippet.Jobs\Whippet.Jobs.csproj" />

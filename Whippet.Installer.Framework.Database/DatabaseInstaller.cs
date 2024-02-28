@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net;
 using Athi.Whippet.Data.NHibernate;
 using Athi.Whippet.Data.Database;
 using Athi.Whippet.Data.Database.Microsoft;
 using Athi.Whippet.Data.Database.Oracle.MySQL;
+using Athi.Whippet.Data.Database.PostgreSQL;
 using PasswordGenerator;
 
 namespace Athi.Whippet.Installer.Framework.Database
@@ -40,6 +42,12 @@ namespace Athi.Whippet.Installer.Framework.Database
         /// </summary>
         private WhippetDatabaseConnection Connection
         { get; set; }
+
+        /// <summary>
+        /// Gets the generated credentials for the database. This property is read-only.
+        /// </summary>
+        public NetworkCredential Credentials
+        { get; private set; }
         
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseInstaller"/> class with the specified parameters.
@@ -128,8 +136,8 @@ namespace Athi.Whippet.Installer.Framework.Database
                 IInstallerAction dbLoginAction = null;
                 IInstallerAction dbPrincipalAction = null;
 
-                IPassword password = null;
-                
+                IPassword password = new Password().IncludeLowercase().IncludeNumeric().IncludeUppercase().IncludeSpecial("~!@^&_").LengthRequired(64);
+
                 // determine the type of install action to get
 
                 if (databaseConnection is WhippetSqlServerConnection)
@@ -138,29 +146,39 @@ namespace Athi.Whippet.Installer.Framework.Database
                     dbCreateSchemaAction = new DBCreateSchemaAction.MSSQL();
                     dbLoginAction = new DBCreateLoginAction.MSSQL();
                     dbPrincipalAction = new DBCreatePrincipalAction.MSSQL();
+                    
+                    actions.Add(0, dbCreateAction);
+                    actions.Add(1, dbCreateSchemaAction);
+                    actions.Add(2, dbLoginAction);
+                    actions.Add(3, dbPrincipalAction);
                 }
                 else if (databaseConnection is WhippetMySqlConnection)
                 {
                     //TODO: finish MySQL installer
                     throw new InvalidOperationException("This method has not been implemented yet.");
                 }
+                else if (databaseConnection is WhippetPostgreSqlConnection)
+                {
+                    dbCreateAction = new DBCreateAction.PostgreSQL();
+                    dbLoginAction = new DBCreateLoginAction.PostgreSQL();
+                    dbCreateSchemaAction = new DBCreateSchemaAction.PostgreSQL();
+
+                    actions.Add(0, dbLoginAction);
+                    actions.Add(1, dbCreateAction);
+                    actions.Add(2, dbCreateSchemaAction);
+                }
                 else
                 {
                     throw new ArgumentException("Database connection of type " + databaseConnection.GetType().FullName + " is not supported.");
                 }
 
-                actions.Add(0, dbCreateAction);
-                actions.Add(1, dbCreateSchemaAction);
-                actions.Add(2, dbLoginAction);
-                actions.Add(3, dbPrincipalAction);
-
-                password = new Password().IncludeLowercase().IncludeNumeric().IncludeUppercase().IncludeSpecial("~!@^&_").LengthRequired(64);
-                
                 installer = new DatabaseInstaller(actions, updateProgressPercentage, updateStatusAndProgressPercentage, errorHandler);
                 installer.DatabaseName = String.IsNullOrWhiteSpace(databaseName) ? InstallerTokens.TOKEN_DBNAME__DEFAULT : databaseName?.Trim();
                 installer.DatabaseUserPassword = password.Next();
                 installer.Connection = databaseConnection;
 
+                installer.Credentials = new NetworkCredential("whippet_sa", installer.DatabaseUserPassword);
+                
                 return installer;
             }
         }

@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Resources.NetStandard;
 using SqlServer = Microsoft.SqlServer.Management.Smo.Server;
 using Athi.Whippet.Data.Database.Microsoft;
+using Athi.Whippet.Data.Database.PostgreSQL;
+using Athi.Whippet.Data.Database.PostgreSQL.Extensions;
 using Athi.Whippet.Installer.Framework.Database.ResourceFiles;
+using Athi.Whippet.Localization;
+using Athi.Whippet.Localization.Extensions;
 
 namespace Athi.Whippet.Installer.Framework.Database
 {
@@ -10,6 +15,8 @@ namespace Athi.Whippet.Installer.Framework.Database
     /// </summary>
     internal class DBCreateLoginAction : InstallerActionBase, IInstallerAction
     {
+        private const string WHIPPET_SA = "whippet_sa";
+        
         /// <summary>
         /// Indicates whether the action supports asynchronous execution. This property is read-only.
         /// </summary>
@@ -91,6 +98,79 @@ namespace Athi.Whippet.Installer.Framework.Database
                 }
                 finally
                 {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+                
+                return result;
+            }
+        }
+        
+        /// <summary>
+        /// Represents a <see cref="DBCreateLoginAction"/> for PostgreSQL database systems. This class cannot be inherited.
+        /// </summary>
+        internal sealed class PostgreSQL : DBCreateLoginAction, IInstallerAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DBCreateLoginAction.PostgreSQL"/> class with no arguments.
+            /// </summary>
+            public PostgreSQL()
+                : base()
+            { }
+            
+            /// <summary>
+            /// Executes the current action with the specified parameters.
+            /// </summary>
+            /// <param name="args">Parameters to pass to the action (if any).</param>
+            /// <returns><see cref="WhippetResultContainer{T}"/> containing the result of the operation.</returns>
+            /// <remarks>Expected parameter order is [connection] [database name] [password].</remarks>
+            public override WhippetResultContainer<object> Execute(params object[] args)
+            {
+                WhippetResultContainer<object> result = null;
+                
+                WhippetPostgreSqlConnection connection = null;
+                WhippetPostgreSqlCommand command = null;
+
+                string password = String.Empty;
+                
+                ResXResourceReader resx = null;
+
+                try
+                {
+                    VerifyParameters(typeof(WhippetPostgreSqlConnection), args);
+                    VerifyParameters(typeof(string), args);
+
+                    connection = (WhippetPostgreSqlConnection)(args.First(a => a is WhippetPostgreSqlConnection));
+                    password = Convert.ToString(args.Last(a => a is String));
+
+                    if (!connection.UserExists(WHIPPET_SA))
+                    {
+                        resx = LocalizedStringResourceLoader.ReadResXFile(nameof(Scripts_PostgreSQL));
+
+                        command = connection.CreateCommand();
+                        //command.CommandText = Scripts_PostgreSQL.DB_LOGIN.Replace(InstallerTokens.TOKEN_PASSWORD, password, StringComparison.InvariantCultureIgnoreCase);
+                        command.CommandText = resx.GetResource("DB_LOGIN").Replace(InstallerTokens.TOKEN_PASSWORD, password, StringComparison.InvariantCultureIgnoreCase);
+
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+
+                    result = new WhippetResultContainer<object>(WhippetResult.Success, null);
+                }
+                catch (Exception e)
+                {
+                    result = new WhippetResultContainer<object>(e);
+                }
+                finally
+                {
+                    if (command != null)
+                    {
+                        command.Dispose();
+                        command = null;
+                    }
+                    
                     if (connection != null)
                     {
                         connection.Close();

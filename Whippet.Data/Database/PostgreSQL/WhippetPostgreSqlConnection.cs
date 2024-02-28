@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Security;
+using System.Text;
 using System.Transactions;
+using MySql.Data.MySqlClient;
 using Npgsql;
 using IsolationLevel = System.Data.IsolationLevel;
 
@@ -469,7 +471,7 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public override void ChangeDatabase(string databaseName)
         {
-            ChangeConnectionStringDatabase(databaseName);
+            InternalConnection.ChangeDatabase(databaseName);
         }
 
         /// <summary>
@@ -480,7 +482,32 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         protected override void ChangeConnectionStringDatabase(string databaseName)
         {
-            InternalConnection.ChangeDatabase(databaseName);
+            if (String.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentNullException(nameof(databaseName));
+            }
+            else if (!String.IsNullOrWhiteSpace(ConnectionString))
+            {
+                StringBuilder builder = new StringBuilder();
+                string[] pieces = ConnectionString.Split(new char[] { ';' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                if (pieces != null && pieces.Length > 0)
+                {
+                    for (int i = 0; i < pieces.Length; i++)
+                    {
+                        if (!pieces[i].StartsWith("database", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            builder.Append(pieces[i] + ';');
+                        }
+                        else
+                        {
+                            builder.Append("database=" + databaseName.ToLowerInvariant() + ';');
+                        }
+                    }
+                }
+
+                ConnectionString = builder.ToString();
+            }
         }
 
         /// <summary>
@@ -755,6 +782,87 @@ namespace Athi.Whippet.Data.Database.PostgreSQL
         public async Task ReloadTypesAsync()
         {
             await InternalConnection.ReloadTypesAsync();
+        }
+
+        /// <summary>
+        /// Changes the username and password on the connection string.
+        /// </summary>
+        /// <param name="username">Username to use when connecting to the data source.</param>
+        /// <param name="password">Password to use when connecting to the data source.</param>
+        public override void UpdateCredentials(string username, string password)
+        {
+            if (!String.IsNullOrWhiteSpace(ConnectionString))
+            {
+                StringBuilder builder = new StringBuilder();
+                string[] pieces = ConnectionString.Split(new char[] { ';' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                NpgsqlConnection newConnection = null;
+
+                bool foundUsername = false;
+                bool foundPassword = false;
+                
+                if (pieces != null && pieces.Length > 0)
+                {
+                    for (int i = 0; i < pieces.Length; i++)
+                    {
+                        if (!pieces[i].StartsWith("user id", StringComparison.InvariantCultureIgnoreCase) 
+                                && !pieces[i].StartsWith("password", StringComparison.InvariantCultureIgnoreCase)
+                                && !pieces[i].StartsWith("username", StringComparison.InvariantCultureIgnoreCase)
+                            )
+                        {
+                            builder.Append(pieces[i] + ';');
+                        }
+                        else
+                        {
+                            if (pieces[i].StartsWith("user id", StringComparison.InvariantCultureIgnoreCase)
+                                || pieces[i].StartsWith("username", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                foundUsername = true;
+                                
+                                if (!String.IsNullOrWhiteSpace(username))
+                                {
+                                    builder.Append("User ID=" + username + ';');
+                                }
+                            }
+                            else
+                            {
+                                foundPassword = true;
+                                
+                                if (!String.IsNullOrWhiteSpace(password))
+                                {
+                                    builder.Append("Password=" + password + ';');
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!builder.ToString().EndsWith(';'))
+                {
+                    builder.Append(';');
+                }
+
+                if (!foundUsername && !String.IsNullOrWhiteSpace(username))
+                {
+                    builder.Append("User ID=" + username + ';');
+                }
+
+                if (!foundPassword && !String.IsNullOrWhiteSpace(password))
+                {
+                    builder.Append("Password=" + password + ';');
+                }
+                
+                if (InternalConnection.State != ConnectionState.Closed)
+                {
+                    InternalConnection.Close();
+                }
+                
+                newConnection = InternalConnection.CloneWith(builder.ToString());
+
+                Dispose();
+
+                ResetConnection(newConnection);
+            }
         }
 
         public static implicit operator NpgsqlConnection(WhippetPostgreSqlConnection connection)

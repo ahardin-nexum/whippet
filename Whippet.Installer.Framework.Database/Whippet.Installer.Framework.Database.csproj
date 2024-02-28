@@ -22,10 +22,17 @@
       <EmbeddedResource Update="ResourceFiles\Scripts_MSSQL.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Scripts.MSSQL.Designer.cs</LastGenOutput>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Update="ResourceFiles\Scripts_MySQL.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Scripts.MySQL.Designer.cs</LastGenOutput>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <EmbeddedResource Update="ResourceFiles\Scripts_PostgreSQL.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Scripts.PostgreSQL.Designer.cs</LastGenOutput>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
 
@@ -40,6 +47,11 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Scripts_MySQL.resx</DependentUpon>
       </Compile>
+      <Compile Update="ResourceFiles\Scripts_PostgreSQL.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Scripts_PostgreSQL.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -47,6 +59,7 @@
       <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.23.0" />
       <PackageReference Include="NHibernate" Version="5.5.0" />
       <PackageReference Include="PasswordGenerator" Version="2.1.0" />
+      <PackageReference Include="ResXResourceReader.NetStandard" Version="1.2.0" />
       <PackageReference Include="System.Drawing.Common" Version="8.0.2" />
       <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
     </ItemGroup>

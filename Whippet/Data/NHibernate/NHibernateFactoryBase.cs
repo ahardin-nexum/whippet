@@ -76,37 +76,5 @@ namespace Athi.Whippet.Data.NHibernate
                 ConfigureMappings(options, types.Select(t => t.Assembly));
             }
         }
-        
-        /// <summary>
-        /// Configures the <see cref="NHibernateConfigurationOptions"/> to use a specific database type with a given connection string.
-        /// </summary>
-        /// <param name="options"><see cref="NHibernateConfigurationOptions"/> object to configure.</param>
-        /// <param name="databaseDialect">Specifies the type of database to configure NHibernate for.</param>
-        /// <param name="connectionString">Connection string of the database.</param>
-        public static void ConfigureDatabaseServer(NHibernateConfigurationOptions options, SupportedWhippetDatabaseTypes databaseDialect, string connectionString)
-        {
-            options.DatabaseConfiguration = new Func<IPersistenceConfigurer>(() =>
-            {
-                IPersistenceConfigurer pConfig = null;
-                
-                switch (databaseDialect)
-                {
-                    case SupportedWhippetDatabaseTypes.MsSql2012:
-                        pConfig = MsSqlConfiguration.MsSql2012
-                            .ConnectionString(connectionString)
-                            .ShowSql();
-                        break;
-                    case SupportedWhippetDatabaseTypes.Sqlite:
-                        pConfig = SQLiteConfiguration
-                            .Standard
-                            .ConnectionString(connectionString);
-                        break;
-                    default:
-                        throw new InvalidEnumArgumentException(nameof(databaseDialect), Convert.ToInt32(databaseDialect), typeof(SupportedWhippetDatabaseTypes));
-                }
-
-                return pConfig;
-            });
-        }
     }
 }

@@ -629,6 +629,16 @@ namespace Athi.Whippet.Data.Database.Microsoft
         }
         
         /// <summary>
+        /// Changes the username and password on the connection string.
+        /// </summary>
+        /// <param name="username">Username to use when connecting to the data source.</param>
+        /// <param name="password">Password to use when connecting to the data source.</param>
+        public override void UpdateCredentials(string username, string password)
+        {
+            throw new NotImplementedException("Need to implement this.");
+        }
+        
+        /// <summary>
         /// Converts the specified <see cref="SqlConnection"/> object to a <see cref="WhippetSqlServerConnection"/> object.
         /// </summary>
         /// <param name="connection"><see cref="SqlConnection"/> object.</param>
